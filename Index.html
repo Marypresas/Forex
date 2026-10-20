@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FXTrade</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+:root{--blue:#1e6df2;--green:#00c48c;--red:#f6465d;--card:#131b2c;--border:#2a354b;--dim:#9aa9c1}
+body{background:#0a0e1a;color:#eef2f6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.app{max-width:1440px;width:100%;background:#0b0f1a;border-radius:2.5rem;border:1px solid #1e2a42;box-shadow:0 30px 50px -20px #000c;overflow:hidden;display:flex;flex-direction:column}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2rem;background:#0a101c;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:1rem}
+.logo{display:flex;align-items:center;gap:.6rem;font-size:1.7rem;font-weight:700}
+.logo i{background:linear-gradient(135deg,var(--blue),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent}
+.switch{display:flex;gap:.5rem;background:#0f1729;padding:.35rem;border-radius:60px;border:1px solid #28344e}
+.btn{padding:.6rem 1.8rem;border-radius:50px;font-weight:600;border:none;background:transparent;color:#b7c3db;cursor:pointer;display:flex;align-items:center;gap:.5rem}
+.btn.on-demo{background:linear-gradient(145deg,var(--blue),#0d4bb5);color:#fff}
+.btn.on-real{background:linear-gradient(145deg,var(--red),#b81d32);color:#fff}
+.profile{display:flex;align-items:center;gap:1.2rem}
+.balance{background:#0f1729;padding:.5rem 1.2rem;border-radius:40px;border:1px solid #29364f;font-weight:600;display:flex;align-items:center;gap:.7rem}
+.balance i{color:var(--green)}
+.avatar{background:linear-gradient(135deg,#2e4f8a,#1f3560);border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #395380;color:#d2e0ff}
+.dash{display:flex;flex:1}
+.side{width:260px;background:#0d1322;padding:1.8rem 1rem;border-right:1px solid var(--border);flex-direction:column;gap:.5rem;display:none}
+@media(min-width:900px){.side{display:flex}}
+.side div{display:flex;align-items:center;gap:1rem;padding:.9rem 1.2rem;border-radius:14px;color:var(--dim);font-weight:500}
+.side div.active{background:#1e2a42;color:#fff;border-left:4px solid var(--blue);border-radius:14px 0 0 14px}
+.badge{margin-left:auto;font-size:.7rem;background:var(--blue);padding:.2rem .6rem;border-radius:40px;color:#fff;font-weight:700}
+.main{flex:1;padding:2rem;display:flex;flex-direction:column;gap:2rem}
+.head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.head h2{font-size:1.8rem;font-weight:700}
+.head h2 i{color:var(--blue);margin-right:.5rem}
+.winrate{display:flex;align-items:center;gap:.7rem;background:#1e2a42;padding:.5rem 1.2rem;border-radius:40px;border:1px solid #2f3d5e;font-weight:600}
+.green{color:var(--green)}.red{color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem}
+.card{background:var(--card);border-radius:24px;padding:1.5rem;border:1px solid var(--border)}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.pair{font-weight:700;font-size:1.3rem;display:flex;align-items:center;gap:.4rem}
+.chg{padding:.25rem .8rem;border-radius:40px;font-size:.85rem;font-weight:700}
+.chg.pos{color:var(--green);background:rgba(0,196,140,.12)}
+.chg.neg{color:var(--red);background:rgba(246,70,93,.12)}
+.price{font-size:2rem;font-weight:800;margin-bottom:.5rem;display:flex;align-items:baseline;gap:.5rem}
+.price small{font-size:1rem;font-weight:500;color:var(--dim)}
+.chart{display:flex;align-items:flex-end;gap:.3rem;height:45px;margin:1rem 0}
+.bar{flex:1;border-radius:4px;height:calc(20% + var(--h)*1%);min-height:6px;background:#2a3f66}
+.bar.g{background:linear-gradient(0deg,var(--green),#3ddba8)}
+.bar.r{background:linear-gradient(0deg,var(--red),#ff7b8f)}
+.trade{display:flex;gap:.8rem;margin-top:1rem}
+.trade button{flex:1;padding:.9rem 0;border:none;border-radius:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:.4rem}
+.buy{background:rgba(0,196,140,.15);color:var(--green);border:1px solid rgba(0,196,140,.3)}
+.sell{background:rgba(246,70,93,.12);color:var(--red);border:1px solid rgba(246,70,93,.3)}
+.deposit{background:linear-gradient(145deg,#131f33,#0e1828);border-radius:28px;padding:2rem;border:1px solid #2d3b5a;display:none;flex-direction:column;gap:1.5rem}
+.deposit.show{display:flex}
+.deposit h3{font-size:1.6rem;display:flex;align-items:center;gap:.8rem}
+.deposit h3 i{color:var(--green)}
+.wallet{background:#0c1220;border-radius:22px;padding:1.5rem;border:1px solid #26324b;display:flex;flex-wrap:wrap;align-items:center;gap:1.5rem;justify-content:space-between}
+.wallet span{color:var(--dim);font-size:.85rem;text-transform:uppercase}
+.addr{background:#0a0f19;padding:.8rem 1.4rem;border-radius:50px;font-family:monospace;font-weight:600;border:1px solid #2f3f60;color:#b9d0ff;display:flex;align-items:center;gap:.8rem}
+.chips{display:flex;gap:1rem;flex-wrap:wrap}
+.chip{background:#1c2942;padding:.6rem 1.2rem;border-radius:40px;font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:.5rem;border:1px solid #2f4160}
+.amount{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;justify-content:space-between}
+.amount input{background:#0b1220;border:1px solid #26324b;border-radius:50px;padding:.9rem 1.6rem;color:#fff;font-size:1.2rem;font-weight:600;width:200px;outline:none}
+.amount button{background:linear-gradient(145deg,var(--blue),#1550b0);border:none;color:#fff;padding:1rem 2.5rem;border-radius:50px;font-weight:700;display:flex;align-items:center;gap:.8rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem}
+.stat{background:#121b2b;border-radius:20px;padding:1.2rem;border:1px solid #26324b;display:flex;flex-direction:column;gap:.3rem}
+.stat span{color:var(--dim);font-size:.8rem;text-transform:uppercase}
+.stat b{font-size:1.7rem;font-weight:800}
+.g{color:var(--green)}.r{color:var(--red)}.b{color:#5f8aff}
+.feed{background:#0f1729;border-radius:24px;padding:1.5rem;border:1px solid #243049}
+.feed h4{font-size:1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.6rem;color:#cdddfa}
+.feed h4 i{color:var(--blue)}
+.item{display:flex;justify-content:space-between;align-items:center;padding:.9rem 0;border-bottom:1px solid #1d2a3f}
+.item:last-child{border-bottom:none}
+.item b{font-weight:700}
+.item em{color:var(--dim);font-size:.8rem;font-style:normal;margin-left:12px}
+.res{font-weight:700;padding:.25rem .9rem;border-radius:40px;font-size:.8rem}
+.res.win{background:rgba(0,196,140,.15);color:var(--green)}
+.res.loss{background:rgba(246,70,93,.12);color:var(--red)}
+@media(max-width:640px){.app{border-radius:1.5rem}.nav{padding:1rem}.main{padding:1.2rem}.price{font-size:1.6rem}.btn{padding:.5rem 1rem;font-size:.8rem}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="nav">
+<div class="logo"><i class="fas fa-chart-line"></i><span>FXTrade</span></div>
+<div class="switch">
+<button class="btn on-demo" id="demoBtn"><i class="fas fa-flask"></i> Demo (90% WR)</button>
+<button class="btn" id="realBtn"><i class="fas fa-briefcase"></i> Real</button>
+</div>
+<div class="profile">
+<div class="balance"><i class="fas fa-wallet"></i><span id="bal">$10,000</span></div>
+<div class="avatar">JD</div>
+</div>
+</header>
+<div class="dash">
+<aside class="side">
+<div class="active"><i class="fas fa-chart-pie"></i> Markets <span class="badge" id="sb">demo</span></div>
+<div><i class="fas fa-history"></i> Trade History</div>
+<div><i class="fas fa-robot"></i> AI Signals</div>
+<div><i class="fas fa-cog"></i> Settings</div>
+</aside>
+<main class="main">
+<div class="head">
+<h2><i class="fas fa-chart-simple"></i> <span id="title">Demo Account</span></h2>
+<div class="winrate" id="wrTag"><i class="fas fa-trophy green"></i> <span id="wrText">90% Winning Rate</span></div>
+</div>
+<div class="grid" id="pairs"></div>
+<div class="stats">
+<div class="stat"><span>Today's P/L</span><b class="g" id="pl">+$428.50</b></div>
+<div class="stat"><span>Win Rate</span><b class="b" id="wrs">90%</b></div>
+<div class="stat"><span>Trades</span><b id="tc">18</b></div>
+</div>
+<div class="deposit" id="dep">
+<h3><i class="fas fa-circle-dollar-to-slot"></i> Deposit Crypto</h3>
+<div class="wallet">
+<div><span>Your USDT (TRC-20) deposit address</span>
+<div class="addr"><i class="fas fa-copy"></i> TJmVQ9pL7Rk4XyZ2aBcD3eFgH5iJkLmN8</div>
+</div>
+<div class="chips">
+<div class="chip"><i class="fab fa-bitcoin"></i> BTC</div>
+<div class="chip"><i class="fab fa-ethereum"></i> ETH</div>
+<div class="chip"><i class="fas fa-dollar-sign"></i> USDT</div>
+</div>
+</div>
+<div class="amount">
+<input value="500 USDT" readonly>
+<button><i class="fas fa-qrcode"></i> Generate Payment</button>
+</div>
+<p style="color:var(--dim);font-size:.85rem"><i class="fas fa-shield-alt g"></i> Send only USDT (TRC-20). Minimum 50 USDT.</p>
+</div>
+<div class="feed">
+<h4><i class="fas fa-bolt"></i> Live trade feed</h4>
+<div id="feed"></div>
+</div>
+</main>
+</div>
+</div>
+<script>
+const pairs=[
+{n:'EUR/USD',f:'🇪🇺🇺🇸',p:1.0842,c:.12,g:5,r:2},
+{n:'GBP/USD',f:'🇬🇧🇺🇸',p:1.2678,c:-.08,g:3,r:4},
+{n:'USD/JPY',f:'🇺🇸🇯🇵',p:149.32,c:.45,g:6,r:1},
+{n:'AUD/USD',f:'🇦🇺🇺🇸',p:.6587,c:-.21,g:2,r:5},
+{n:'USD/CAD',f:'🇺🇸🇨🇦',p:1.3546,c:.18,g:5,r:2},
+{n:'BTC/USD',f:'₿🇺🇸',p:64230.5,c:1.24,g:7,r:1}
+];
+const $=id=>document.getElementById(id);
+let acct='demo';
+
+function renderPairs(){
+const demo=acct==='demo';
+$('pairs').innerHTML=pairs.map(x=>{
+const gc=demo?x.g:Math.max(1,x.r-1),rc=demo?x.r:x.r+2;
+let bars='';
+for(let i=0;i<8;i++){
+const h=20+Math.floor(Math.random()*60);
+bars+=`<div class="bar ${i<gc?'g':'r'}" style="--h:${h}"></div>`;
+}
+const sign=x.c>=0?'+':'';
+const price=(x.p+(Math.random()*.02-.01)).toFixed(x.p>100?2:4);
+return `<div class="card">
+<div class="top"><div class="pair">${x.f} ${x.n}</div>
+<div class="chg ${x.c>=0?'pos':'neg'}">${sign}${x.c}%</div></div>
+<div class="price">${price} <small>USD</small></div>
+<div class="chart">${bars}</div>
+<div class="trade"><button class="buy"><i class="fas fa-arrow-up"></i> Buy</button>
+<button class="sell"><i class="fas fa-arrow-down"></i> Sell</button></div>
+</div>`;
+}).join('');
+}
+
+function renderFeed(){
+const rate=acct==='demo'?90:20;
+const ps=['EUR/USD','GBP/JPY','USD/CAD','AUD/USD','BTC/USD','XAU/USD'];
+const ts=['just now','2 min ago','7 min ago','15 min ago','28 min ago'];
+let html='';
+for(let i=0;i<5;i++){
+const win=Math.random()*100<rate;
+const txt=win?'WIN +$'+(Math.random()*50+10).toFixed(2):'LOSS -$'+(Math.random()*40+5).toFixed(2);
+html+=`<div class="item"><div><b>${ps[Math.floor(Math.random()*ps.length)]}</b><em>${ts[i]}</em></div>
+<div class="res ${win?'win':'loss'}">${txt}</div></div>`;
+}
+$('feed').innerHTML=html;
+}
+
+function setAccount(a){
+acct=a;
+const demo=a==='demo';
+$('demoBtn').className='btn'+(demo?' on-demo':'');
+$('realBtn').className='btn'+(demo?'':' on-real');
+$('dep').classList.toggle('show',!demo);
+$('bal').innerText=demo?'$10,000':'$2,450.30';
+$('title').innerText=demo?'Demo Account':'Real Account';
+$('wrTag').innerHTML=demo
+?'<i class="fas fa-trophy green"></i> <span>90% Winning Rate</span>'
+:'<i class="fas fa-trophy red"></i> <span>20% Winning Rate</span>';
+$('sb').innerText=demo?'demo':'real';
+$('sb').style.background=demo?'var(--blue)':'var(--red)';
+$('pl').className=demo?'g':'r';
+$('pl').innerText=demo?'+$428.50':'-$127.80';
+$('wrs').innerText=demo?'90%':'20%';
+$('tc').innerText=demo?'18':'32';
+renderPairs();
+renderFeed();
+}
+
+$('demoBtn').onclick=()=>setAccount('demo');
+$('realBtn').onclick=()=>setAccount('real');
+setAccount('demo');
+setInterval(renderFeed,12000);
+</script>
+</body>
+  </html>
